@@ -66,3 +66,6 @@ Como os dados fluem na aplicação:
 | transactions | id, user_id, date, description, amount, category, source| Pertence a user |
 | categories | id, name, color, icon | Referenciada por transactions |
 | insights | id, user_id, content, generated_at | Pertence a user | 
+
+
+Password Supabase: $YV3r8D*-*C_gn+
