@@ -26,3 +26,26 @@ export type CategorySummary = {
     icon: string
     count: number
 }
+
+export type Profile = {
+  id: string
+  full_name: string | null
+  nif: string | null
+  currency: string
+  avatar_url: string | null
+  updated_at: string
+}
+
+export type Currency = {
+  code: string
+  symbol: string
+  name: string
+}
+
+export const CURRENCIES: Currency[] = [
+  { code: 'EUR', symbol: '€', name: 'Euro' },
+  { code: 'USD', symbol: '$', name: 'Dólar Americano' },
+  { code: 'GBP', symbol: '£', name: 'Libra Esterlina' },
+  { code: 'BRL', symbol: 'R$', name: 'Real Brasileiro' },
+  { code: 'CHF', symbol: 'Fr', name: 'Franco Suíço' },
+]

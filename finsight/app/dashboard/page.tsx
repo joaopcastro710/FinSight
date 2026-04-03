@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { getTransactions, getCategorySummary, getMonthlyTotals } from '@/lib/data'
+import { getTransactions, getCategorySummary, getMonthlyTotals, getProfile } from '@/lib/data'
 import SummaryCards from '@/components/dashboard/SummaryCards'
 import SpendingPieChart from '@/components/dashboard/SpendingPieChart'
 import SpendingLineChart from '@/components/dashboard/SpendingLineChart'
@@ -9,17 +9,22 @@ import TransactionTable from '@/components/dashboard/TransactionTable'
 import CategoryList from '@/components/dashboard/CategoryList'
 import InsightCard from '@/components/dashboard/InsightCard'
 import LogoutButton from './logout-button'
+import type { Profile } from '@/types'
+
 
 export default async function DashboardPage() {
+
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  const [transactions, categorySummary, monthlyTotals] = await Promise.all([
+    const [transactions, categorySummary, monthlyTotals, profile] = await Promise.all([
     getTransactions(),
     getCategorySummary(),
     getMonthlyTotals(),
+    getProfile(),
   ])
+
 
   const hasData = transactions.length > 0
 
@@ -44,9 +49,11 @@ export default async function DashboardPage() {
             <Link href="/upload" className="btn-primary text-xs py-1.5 px-3">
               + Importar CSV
             </Link>
-            <span className="text-xs hidden sm:block" style={{ color: 'var(--text-muted)' }}>
-              {user.email}
-            </span>
+            <Link href="/profile"
+              className="text-xs hidden sm:block transition-colors hover:opacity-80"
+              style={{ color: 'var(--text-muted)' }}>
+              {profile?.full_name || user.email}
+            </Link>
             <LogoutButton />
           </div>
         </div>
