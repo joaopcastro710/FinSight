@@ -7,16 +7,14 @@ import SpendingPieChart from '@/components/dashboard/SpendingPieChart'
 import SpendingLineChart from '@/components/dashboard/SpendingLineChart'
 import TransactionTable from '@/components/dashboard/TransactionTable'
 import CategoryList from '@/components/dashboard/CategoryList'
+import InsightCard from '@/components/dashboard/InsightCard'
 import LogoutButton from './logout-button'
 
 export default async function DashboardPage() {
-  // 1. Verificar autenticação
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-
   if (!user) redirect('/login')
 
-  // 2. Buscar todos os dados em paralelo (mais rápido que sequencial)
   const [transactions, categorySummary, monthlyTotals] = await Promise.all([
     getTransactions(),
     getCategorySummary(),
@@ -26,20 +24,27 @@ export default async function DashboardPage() {
   const hasData = transactions.length > 0
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen" style={{ background: 'var(--bg-base)' }}>
 
       {/* Navbar */}
-      <nav className="bg-white border-b border-gray-100 sticky top-0 z-10">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-          <h1 className="text-xl font-bold text-gray-900">💡 FinSight</h1>
-          <div className="flex items-center gap-4">
-            <Link
-              href="/upload"
-              className="text-sm px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
-            >
+      <nav style={{ background: 'var(--bg-surface)', borderBottom: '1px solid var(--border)' }}
+        className="sticky top-0 z-10">
+        <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-lg flex items-center justify-center text-sm"
+              style={{ background: 'var(--accent)' }}>
+              💡
+            </div>
+            <span className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>
+              FinSight
+            </span>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <Link href="/upload" className="btn-primary text-xs py-1.5 px-3">
               + Importar CSV
             </Link>
-            <span className="text-sm text-gray-400 hidden sm:block">
+            <span className="text-xs hidden sm:block" style={{ color: 'var(--text-muted)' }}>
               {user.email}
             </span>
             <LogoutButton />
@@ -47,50 +52,43 @@ export default async function DashboardPage() {
         </div>
       </nav>
 
-      {/* Conteúdo principal */}
-      <main className="max-w-6xl mx-auto px-6 py-8 space-y-6">
+      <main className="max-w-6xl mx-auto px-6 py-8 space-y-5">
 
-        {/* Estado vazio — sem transações ainda */}
+        {/* Estado vazio */}
         {!hasData && (
-          <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center">
+          <div className="card p-16 text-center">
             <div className="text-5xl mb-4">📂</div>
-            <h2 className="text-xl font-semibold text-gray-800 mb-2">
+            <h2 className="text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
               Ainda sem dados
             </h2>
-            <p className="text-gray-400 mb-6">
+            <p className="text-sm mb-6" style={{ color: 'var(--text-secondary)' }}>
               Importa o teu primeiro extrato bancário para começar
             </p>
-            <Link
-              href="/upload"
-              className="inline-block py-2 px-6 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
-            >
+            <Link href="/upload" className="btn-primary py-2 px-5">
               📂 Importar CSV
             </Link>
           </div>
         )}
 
-        {/* Dashboard com dados */}
         {hasData && (
           <>
-            {/* Cards de resumo */}
             <SummaryCards transactions={transactions} />
 
-            {/* Gráficos lado a lado (em desktop) */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
               <SpendingPieChart data={categorySummary} />
               <CategoryList data={categorySummary} />
             </div>
 
-            {/* Gráfico de linha — largura total */}
             {monthlyTotals.length > 1 && (
               <SpendingLineChart data={monthlyTotals} />
             )}
 
-            {/* Tabela de transações */}
+            {/* InsightCard — será preenchido na Parte 2 */}
+            <InsightCard userId={user.id} transactions={transactions} />
+
             <TransactionTable transactions={transactions} />
           </>
         )}
-
       </main>
     </div>
   )

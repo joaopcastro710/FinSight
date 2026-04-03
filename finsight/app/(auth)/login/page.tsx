@@ -16,80 +16,86 @@ export default function LoginPage() {
   async function handleLogin() {
     setLoading(true)
     setError(null)
-
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
-
+    const { error } = await supabase.auth.signInWithPassword({ email, password })
     if (error) {
       setError('Email ou password incorretos.')
       setLoading(false)
       return
     }
-
     router.push('/dashboard')
     router.refresh()
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 w-full max-w-md">
-        
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">💡 FinSight</h1>
-          <p className="text-gray-500 mt-1">Entra na tua conta</p>
+    <div className="min-h-screen flex items-center justify-center px-4"
+      style={{ background: 'var(--bg-base)' }}>
+
+      {/* Card central */}
+      <div className="w-full max-w-sm">
+
+        {/* Logo */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl mb-4"
+            style={{ background: 'var(--accent)', boxShadow: '0 0 24px #1E40AF40' }}>
+            <span className="text-xl">💡</span>
+          </div>
+          <h1 className="text-2xl font-semibold" style={{ color: 'var(--text-primary)' }}>
+            FinSight
+          </h1>
+          <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>
+            Entra na tua conta
+          </p>
         </div>
 
-        {/* Erro */}
-        {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
-            {error}
-          </div>
-        )}
+        {/* Form card */}
+        <div className="card p-6 space-y-4">
+          {error && (
+            <div className="p-3 rounded-lg text-sm"
+              style={{ background: 'var(--error-subtle)', color: 'var(--error)', border: '1px solid #EF444430' }}>
+              {error}
+            </div>
+          )}
 
-        {/* Formulário */}
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Email
+          <div className="space-y-1">
+            <label className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>
+              EMAIL
             </label>
             <input
+              className="input"
               type="email"
+              placeholder="o@teu.email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="o@teu.email"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Password
+          <div className="space-y-1">
+            <label className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>
+              PASSWORD
             </label>
             <input
+              className="input"
               type="password"
+              placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
             />
           </div>
 
           <button
             onClick={handleLogin}
             disabled={loading}
-            className="w-full py-2 px-4 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="btn-primary w-full justify-center py-2.5"
           >
             {loading ? 'A entrar...' : 'Entrar'}
           </button>
         </div>
 
-        {/* Link para signup */}
-        <p className="mt-6 text-center text-sm text-gray-500">
+        <p className="text-center text-sm mt-4" style={{ color: 'var(--text-muted)' }}>
           Não tens conta?{' '}
-          <Link href="/signup" className="text-blue-600 hover:underline font-medium">
+          <Link href="/signup" style={{ color: 'var(--accent-text)' }}
+            className="hover:underline font-medium">
             Cria uma aqui
           </Link>
         </p>

@@ -1,26 +1,21 @@
 'use client'
 
-import {
-  PieChart, Pie, Cell, Tooltip,
-  ResponsiveContainer, Legend
-} from 'recharts'
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts'
 import { CategorySummary } from '@/types'
 
-type Props = {
-  data: CategorySummary[]
-}
+type Props = { data: CategorySummary[] }
 
-// Tooltip personalizado que aparece ao passar o rato
 function CustomTooltip({ active, payload }: any) {
-  if (active && payload && payload.length) {
+  if (active && payload?.length) {
     const item = payload[0].payload
     return (
-      <div className="bg-white border border-gray-200 rounded-xl p-3 shadow-lg">
-        <p className="font-semibold text-gray-800">
+      <div className="card px-3 py-2 text-sm shadow-xl">
+        <p className="font-medium" style={{ color: 'var(--text-primary)' }}>
           {item.icon} {item.name}
         </p>
-        <p className="text-gray-600 text-sm">€{item.total.toFixed(2)}</p>
-        <p className="text-gray-400 text-xs">{item.percentage}% do total</p>
+        <p style={{ color: 'var(--text-secondary)' }}>
+          €{item.total.toFixed(2)} · {item.percentage}%
+        </p>
       </div>
     )
   }
@@ -28,40 +23,21 @@ function CustomTooltip({ active, payload }: any) {
 }
 
 export default function SpendingPieChart({ data }: Props) {
-  if (data.length === 0) {
-    return (
-      <div className="flex items-center justify-center h-64 text-gray-400">
-        Sem dados para mostrar
-      </div>
-    )
-  }
-
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 p-6">
-      <h2 className="text-lg font-semibold text-gray-800 mb-4">
-        Despesas por Categoria
+    <div className="card p-6">
+      <h2 className="text-sm font-medium mb-5" style={{ color: 'var(--text-secondary)' }}>
+        DISTRIBUIÇÃO POR CATEGORIA
       </h2>
-      <ResponsiveContainer width="100%" height={300}>
+      <ResponsiveContainer width="100%" height={260}>
         <PieChart>
-          <Pie
-            data={data}
-            cx="50%"
-            cy="50%"
-            innerRadius={70}
-            outerRadius={110}
-            paddingAngle={3}
-            dataKey="total"
-          >
-            {data.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={entry.color} />
+          <Pie data={data} cx="50%" cy="50%"
+            innerRadius={65} outerRadius={100}
+            paddingAngle={2} dataKey="total">
+            {data.map((entry, i) => (
+              <Cell key={i} fill={entry.color} opacity={0.9} />
             ))}
           </Pie>
           <Tooltip content={<CustomTooltip />} />
-          <Legend
-            formatter={(value) => (
-              <span className="text-sm text-gray-600">{value}</span>
-            )}
-          />
         </PieChart>
       </ResponsiveContainer>
     </div>

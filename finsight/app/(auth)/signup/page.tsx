@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 
@@ -12,55 +11,44 @@ export default function SignupPage() {
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
   const [loading, setLoading] = useState(false)
-  const router = useRouter()
   const supabase = createClient()
 
   async function handleSignup() {
     setLoading(true)
     setError(null)
-
     if (password !== confirmPassword) {
       setError('As passwords não coincidem.')
       setLoading(false)
       return
     }
-
     if (password.length < 6) {
       setError('A password deve ter pelo menos 6 caracteres.')
       setLoading(false)
       return
     }
-
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-    })
-
+    const { error } = await supabase.auth.signUp({ email, password })
     if (error) {
-      setError('Erro ao criar conta. Tenta novamente.')
+      setError(error.message)
       setLoading(false)
       return
     }
-
-    // Supabase envia email de confirmação por defeito
-    // Para desenvolvimento, vamos desativar isso no Supabase dashboard
     setSuccess(true)
     setLoading(false)
   }
 
   if (success) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 w-full max-w-md text-center">
-          <div className="text-4xl mb-4">✅</div>
-          <h2 className="text-xl font-bold text-gray-900 mb-2">Conta criada!</h2>
-          <p className="text-gray-500 mb-6">
-            Verifica o teu email para confirmar a conta, ou entra diretamente se a confirmação estiver desativada.
+      <div className="min-h-screen flex items-center justify-center px-4"
+        style={{ background: 'var(--bg-base)' }}>
+        <div className="card p-8 text-center max-w-sm w-full">
+          <div className="text-4xl mb-3">✅</div>
+          <h2 className="text-lg font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
+            Conta criada!
+          </h2>
+          <p className="text-sm mb-6" style={{ color: 'var(--text-secondary)' }}>
+            Já podes entrar na tua conta.
           </p>
-          <Link
-            href="/login"
-            className="inline-block py-2 px-6 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
-          >
+          <Link href="/login" className="btn-primary justify-center w-full py-2.5">
             Ir para o Login
           </Link>
         </div>
@@ -69,76 +57,59 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center px-4"
+      style={{ background: 'var(--bg-base)' }}>
+      <div className="w-full max-w-sm">
 
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">💡 FinSight</h1>
-          <p className="text-gray-500 mt-1">Cria a tua conta gratuita</p>
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl mb-4"
+            style={{ background: 'var(--accent)', boxShadow: '0 0 24px #1E40AF40' }}>
+            <span className="text-xl">💡</span>
+          </div>
+          <h1 className="text-2xl font-semibold" style={{ color: 'var(--text-primary)' }}>
+            FinSight
+          </h1>
+          <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>
+            Cria a tua conta gratuita
+          </p>
         </div>
 
-        {/* Erro */}
-        {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
-            {error}
-          </div>
-        )}
+        <div className="card p-6 space-y-4">
+          {error && (
+            <div className="p-3 rounded-lg text-sm"
+              style={{ background: 'var(--error-subtle)', color: 'var(--error)', border: '1px solid #EF444430' }}>
+              {error}
+            </div>
+          )}
 
-        {/* Formulário */}
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Email
-            </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="o@teu.email"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
+          <div className="space-y-1">
+            <label className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>EMAIL</label>
+            <input className="input" type="email" placeholder="o@teu.email"
+              value={email} onChange={(e) => setEmail(e.target.value)} />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Password
-            </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Mínimo 6 caracteres"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
+          <div className="space-y-1">
+            <label className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>PASSWORD</label>
+            <input className="input" type="password" placeholder="Mínimo 6 caracteres"
+              value={password} onChange={(e) => setPassword(e.target.value)} />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Confirmar Password
-            </label>
-            <input
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="Repete a password"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
+          <div className="space-y-1">
+            <label className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>CONFIRMAR PASSWORD</label>
+            <input className="input" type="password" placeholder="Repete a password"
+              value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSignup()} />
           </div>
 
-          <button
-            onClick={handleSignup}
-            disabled={loading}
-            className="w-full py-2 px-4 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
-            {loading ? 'A criar conta...' : 'Criar Conta'}
+          <button onClick={handleSignup} disabled={loading}
+            className="btn-primary w-full justify-center py-2.5">
+            {loading ? 'A criar...' : 'Criar Conta'}
           </button>
         </div>
 
-        {/* Link para login */}
-        <p className="mt-6 text-center text-sm text-gray-500">
+        <p className="text-center text-sm mt-4" style={{ color: 'var(--text-muted)' }}>
           Já tens conta?{' '}
-          <Link href="/login" className="text-blue-600 hover:underline font-medium">
+          <Link href="/login" style={{ color: 'var(--accent-text)' }} className="hover:underline font-medium">
             Entra aqui
           </Link>
         </p>

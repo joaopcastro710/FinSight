@@ -14,11 +14,8 @@ export default function LogoutButton() {
   }
 
   return (
-    <button
-      onClick={handleLogout}
-      className="mt-4 px-4 py-2 bg-red-50 text-red-600 border border-red-200 rounded-lg hover:bg-red-100 transition-colors text-sm font-medium"
-    >
-      Terminar Sessão
+    <button onClick={handleLogout} className="btn-secondary text-xs py-1.5 px-3">
+      Sair
     </button>
   )
 }
