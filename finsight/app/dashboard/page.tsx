@@ -1,13 +1,12 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import Link from 'next/link'
 import LogoutButton from './logout-button'
-
 
 export default async function DashboardPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
-  // Se não há sessão, o middleware já redirecionou — mas é boa prática verificar aqui também
   if (!user) {
     redirect('/login')
   }
@@ -17,19 +16,21 @@ export default async function DashboardPage() {
       <div className="max-w-4xl mx-auto">
         <h1 className="text-2xl font-bold text-gray-900 mb-2">Dashboard 📊</h1>
         <p className="text-gray-500 mb-8">Bem-vindo, {user.email}</p>
-        
-        <div className="bg-white rounded-2xl border border-gray-100 p-6">
-          <p className="text-gray-500">
-            O dashboard está em construção. Sprint 3 vai preencher isto! 🚧
+
+        <div className="bg-white rounded-2xl border border-gray-100 p-6 mb-4">
+          <p className="text-gray-500 mb-4">
+            Ainda não tens transações. Começa por importar o teu extrato bancário.
           </p>
+          <Link
+            href="/upload"
+            className="inline-block py-2 px-6 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            📂 Importar CSV
+          </Link>
         </div>
 
-        {/* Botão de logout temporário para testar */}
         <LogoutButton />
       </div>
     </div>
   )
 }
-
-// Componente client separado só para o botão de logout
-// (precisa de ser 'use client' porque usa interatividade)
