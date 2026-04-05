@@ -109,3 +109,94 @@ export async function getProfile(): Promise<Profile | null> {
 
   return data
 }
+
+// Dados completos para a página de Reports
+export async function getReportsData() {
+  const transactions = await getTransactions()
+
+  if (transactions.length === 0) {
+    return {
+      transactions: [],
+      monthlyData: [],
+      categoryTrends: [],
+      topMonths: [],
+      averageMonthly: 0,
+    }
+  }
+
+  // ── Totais por mês ──────────────────────────────────────────
+  const monthlyMap: Record<string, { total: number; count: number }> = {}
+
+  for (const t of transactions) {
+    const month = t.date.substring(0, 7)
+    if (!monthlyMap[month]) monthlyMap[month] = { total: 0, count: 0 }
+    monthlyMap[month].total += t.amount
+    monthlyMap[month].count += 1
+  }
+
+  const monthlyData = Object.entries(monthlyMap)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([month, { total, count }]) => ({
+      month: new Date(month + '-01').toLocaleDateString('pt-PT', {
+        month: 'short',
+        year: 'numeric',
+      }),
+      monthKey: month,
+      total: Math.round(total * 100) / 100,
+      count,
+    }))
+
+  // ── Média mensal ────────────────────────────────────────────
+  const averageMonthly = monthlyData.length > 0
+    ? monthlyData.reduce((sum, m) => sum + m.total, 0) / monthlyData.length
+    : 0
+
+  // ── Tendências por categoria por mês ────────────────────────
+  // Estrutura: { category: { month: total } }
+  const catMonthMap: Record<string, Record<string, number>> = {}
+
+  for (const t of transactions) {
+    const month = t.date.substring(0, 7)
+    if (!catMonthMap[t.category]) catMonthMap[t.category] = {}
+    catMonthMap[t.category][month] = (catMonthMap[t.category][month] || 0) + t.amount
+  }
+
+  // Top 5 categorias por total gasto
+  const topCategories = Object.entries(catMonthMap)
+    .map(([name, months]) => ({
+      name,
+      total: Object.values(months).reduce((s, v) => s + v, 0),
+    }))
+    .sort((a, b) => b.total - a.total)
+    .slice(0, 5)
+    .map(c => c.name)
+
+  // Construir dados para gráfico de barras agrupado por mês
+  const allMonths = Object.keys(monthlyMap).sort()
+  const categoryTrends = allMonths.map(month => {
+    const point: Record<string, any> = {
+      month: new Date(month + '-01').toLocaleDateString('pt-PT', {
+        month: 'short',
+        year: 'numeric',
+      }),
+    }
+    for (const cat of topCategories) {
+      point[cat] = Math.round((catMonthMap[cat]?.[month] || 0) * 100) / 100
+    }
+    return point
+  })
+
+  // ── Top meses ───────────────────────────────────────────────
+  const topMonths = [...monthlyData]
+    .sort((a, b) => b.total - a.total)
+    .slice(0, 3)
+
+  return {
+    transactions,
+    monthlyData,
+    categoryTrends,
+    topCategories,
+    topMonths,
+    averageMonthly: Math.round(averageMonthly * 100) / 100,
+  }
+}

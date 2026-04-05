@@ -31,33 +31,43 @@ export default async function DashboardPage() {
   return (
     <div className="min-h-screen" style={{ background: 'var(--bg-base)' }}>
 
-      {/* Navbar */}
-      <nav style={{ background: 'var(--bg-surface)', borderBottom: '1px solid var(--border)' }}
-        className="sticky top-0 z-10">
-        <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg flex items-center justify-center text-sm"
-              style={{ background: 'var(--accent)' }}>
-              💡
-            </div>
-            <span className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>
-              FinSight
-            </span>
-          </div>
+    {/* Navbar */}
+    <nav style={{ background: 'var(--bg-surface)', borderBottom: '1px solid var(--border)' }}
+      className="sticky top-0 z-10">
+      <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
 
-          <div className="flex items-center gap-3">
-            <Link href="/upload" className="btn-primary text-xs py-1.5 px-3">
-              + Importar CSV
-            </Link>
-            <Link href="/profile"
-              className="text-xs hidden sm:block transition-colors hover:opacity-80"
-              style={{ color: 'var(--text-muted)' }}>
-              {profile?.full_name || user.email}
-            </Link>
-            <LogoutButton />
+        {/* Logo */}
+        <div className="flex items-center gap-2">
+          <div className="w-7 h-7 rounded-lg flex items-center justify-center text-sm"
+            style={{ background: 'var(--accent)' }}>
+            💡
           </div>
+          <span className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>
+            FinSight
+          </span>
         </div>
-      </nav>
+
+        {/* Links direita */}
+        <div className="flex items-center gap-3">
+          <Link href="/transactions" className="btn-secondary text-xs py-1.5 px-3">
+            Transações
+          </Link>
+          <Link href="/reports" className="btn-secondary text-xs py-1.5 px-3">
+            Reports
+          </Link>
+          <Link href="/upload" className="btn-primary text-xs py-1.5 px-3">
+            + Importar CSV
+          </Link>
+          <Link href="/profile"
+            className="text-xs block transition-colors hover:opacity-80"
+            style={{ color: 'var(--text-muted)' }}>
+            {profile?.full_name || user.email}
+          </Link>
+          <LogoutButton />
+        </div>
+
+      </div>
+    </nav>
 
       <main className="max-w-6xl mx-auto px-6 py-8 space-y-5">
 
